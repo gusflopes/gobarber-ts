@@ -12,13 +12,13 @@ import User from './User';
 @Entity('appointments')
 class Appointment {
   @PrimaryGeneratedColumn('uuid')
-  uid: string;
+  id: string;
 
   @Column()
   provider_id: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'provider_id' })
+  @JoinColumn({ name: 'provider_id', referencedColumnName: 'id' })
   provider: User;
 
   @Column('timestamp with time zone')

@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
 
 export default class CreateAppointments1587496449019
   implements MigrationInterface {
@@ -9,7 +14,7 @@ export default class CreateAppointments1587496449019
         name: 'appointments',
         columns: [
           {
-            name: 'uid',
+            name: 'id',
             type: 'uuid',
             isPrimary: true,
             generationStrategy: 'uuid',
@@ -18,6 +23,7 @@ export default class CreateAppointments1587496449019
           {
             name: 'provider',
             type: 'varchar',
+            // isNullable: true,
           },
           {
             name: 'date',

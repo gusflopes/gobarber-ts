@@ -1,7 +1,9 @@
 import { startOfHour } from 'date-fns';
-import { getCustomRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import Appointment from '../entities/Appointment';
-import AppointmentsRepository from '../repositories/AppointmentsRepository';
+// import { getCustomRepository } from 'typeorm';
+// import Appointment from '../entities/Appointment';
+// import AppointmentsRepository from '../repositories/AppointmentsRepository';
 
 /**
  * SOLID
@@ -9,26 +11,28 @@ import AppointmentsRepository from '../repositories/AppointmentsRepository';
  */
 
 interface Request {
-  provider: string;
+  provider_id: string;
   date: Date;
 }
 
 class CreateAppointmentService {
   // public run() { // alternativa
-  public async execute({ provider, date }: Request): Promise<Appointment> {
-    const appointmentsRepository = getCustomRepository(AppointmentsRepository);
+
+  public async execute({ provider_id, date }: Request): Promise<any> {
+    // const appointmentsRepository = getCustomRepository(AppointmentsRepository);
     const appointmentDate = startOfHour(date);
 
-    const findAppointmentInSameDate = await appointmentsRepository.findByDate(
-      appointmentDate,
-    );
+    // const findAppointmentInSameDate = await appointmentsRepository.findByDate(
+    //   appointmentDate,
+    // );
 
-    if (findAppointmentInSameDate) {
-      throw Error('Já existe um agendamento para este horário.');
-    }
+    // if (findAppointmentInSameDate) {
+    //   throw Error('Já existe um agendamento para este horário.');
+    // }
+    const appointmentsRepository = getRepository(Appointment);
 
     const appointment = appointmentsRepository.create({
-      provider,
+      provider_id,
       date: appointmentDate,
     });
 

@@ -9,7 +9,7 @@ import {
 @Entity('users')
 class Appointment {
   @PrimaryGeneratedColumn('uuid')
-  uid: string;
+  id: string;
 
   @Column()
   name: string;
