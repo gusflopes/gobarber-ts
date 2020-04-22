@@ -3,8 +3,11 @@ import { getCustomRepository } from 'typeorm';
 import { parseISO } from 'date-fns';
 import AppointmentRepository from '../app/repositories/AppointmentsRepository';
 import CreateAppointmentService from '../app/services/CreateAppointmentService';
+import checkJwt from '../app/middlewares/checkJwt'
 
 const Routes = Router();
+
+Routes.use(checkJwt)
 
 Routes.post('/', async (request: Request, response: Response) => {
   try {
@@ -27,6 +30,8 @@ Routes.post('/', async (request: Request, response: Response) => {
 
 Routes.get('/', async (request, response) => {
   const appointmentsRepository = getCustomRepository(AppointmentRepository);
+
+  console.log(request.user)
 
   const appointments = await appointmentsRepository.find();
   return response.json(appointments);

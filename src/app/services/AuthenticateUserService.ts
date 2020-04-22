@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm'
 import { compare } from 'bcryptjs'
 import { sign } from 'jsonwebtoken'
+import authConfig from '../../config/auth'
 
 import User from '../entities/User'
 
@@ -30,9 +31,11 @@ export default class AuthenticateUserService {
       throw new Error('Erro na autenticação.')
     }
 
-    const token = sign({}, 'secretReallysecret', {
+    const { secret, expiresIn } = authConfig.jwt;
+
+    const token = sign({}, secret, {
       subject: user.id,
-      expiresIn: '1d',
+      expiresIn: expiresIn,
     })
 
     // Usuário autenticado.
