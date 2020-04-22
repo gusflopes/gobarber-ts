@@ -1,4 +1,5 @@
 import { getRepository } from 'typeorm';
+import { hash } from 'bcryptjs'
 
 import User from '../entities/User';
 
@@ -20,10 +21,12 @@ export default class CreateUserService {
       throw new Error('Email já está registrado.');
     }
 
+    const hashedPassword = await hash(password, 8)
+
     const user = userRepository.create({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     await userRepository.save(user);
