@@ -9,23 +9,19 @@ const Routes = Router();
 const upload = multer(uploadConfig);
 
 Routes.post('/', async (request: Request, response: Response) => {
-  try {
-    const { password, name, email } = request.body;
+  const { password, name, email } = request.body;
 
-    const createUser = new CreateUserService();
+  const createUser = new CreateUserService();
 
-    const user = await createUser.execute({
-      name,
-      email,
-      password,
-    });
+  const user = await createUser.execute({
+    name,
+    email,
+    password,
+  });
 
-    delete user.password;
+  delete user.password;
 
-    return response.json(user);
-  } catch (err) {
-    return response.status(400).json({ error: err.message });
-  }
+  return response.json(user);
 });
 
 Routes.patch(
@@ -33,20 +29,16 @@ Routes.patch(
   checkJwt,
   upload.single('avatar'),
   async (request: Request, response: Response) => {
-    try {
-      const updateUserAvatarService = new UpdateUserAvatarService();
-      console.log(request.file);
-      const user = await updateUserAvatarService.execute({
-        user_id: request.user.id,
-        avatarFilename: request.file.filename,
-      });
+    const updateUserAvatarService = new UpdateUserAvatarService();
+    console.log(request.file);
+    const user = await updateUserAvatarService.execute({
+      user_id: request.user.id,
+      avatarFilename: request.file.filename,
+    });
 
-      delete user.password;
+    delete user.password;
 
-      return response.json(user);
-    } catch (err) {
-      return response.status(400).json({ error: err.message });
-    }
+    return response.json(user);
   },
 );
 
