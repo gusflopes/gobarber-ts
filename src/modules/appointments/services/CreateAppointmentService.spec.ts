@@ -47,15 +47,11 @@ describe('CreateAppointment', () => {
       provider_id: '15154',
     });
 
-    expect(
+    await expect(
       createAppointmentService.execute({
         date: appointmentDate,
         provider_id: '15154',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
-
-  // it('should be able create a new appointment', () => {
-  //   // const createAppointmentService = new CreateAppointmentService()
-  // });
 });
