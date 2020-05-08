@@ -1,20 +1,25 @@
 import { Router, Request, Response } from 'express';
-import { getCustomRepository } from 'typeorm';
 import { parseISO } from 'date-fns';
-import AppointmentRepository from '@modules/appointments/repositories/AppointmentsRepository';
+import { container } from 'tsyringe';
+
 import CreateAppointmentService from '@modules/appointments/services/CreateAppointmentService';
+
 import checkJwt from '@shared/infra/http/middlewares/checkJwt';
 
-const Routes = Router();
+const appointmentsRouter = Router();
 
-Routes.use(checkJwt);
+appointmentsRouter.use(checkJwt);
 
-Routes.post('/', async (request: Request, response: Response) => {
+// appointmentsRouter.get('/', async (request, response) => {
+//   const appointments = await appointmentsRepository.find();
+//   return response.json(appointments);
+// });
+
+appointmentsRouter.post('/', async (request: Request, response: Response) => {
   const { provider_id, date } = request.body;
-
   const parsedDate = parseISO(date);
 
-  const createAppointment = new CreateAppointmentService();
+  const createAppointment = container.resolve(CreateAppointmentService);
 
   const appointment = await createAppointment.execute({
     date: parsedDate,
@@ -24,25 +29,15 @@ Routes.post('/', async (request: Request, response: Response) => {
   return response.json(appointment);
 });
 
-Routes.get('/', async (request, response) => {
-  const appointmentsRepository = getCustomRepository(AppointmentRepository);
+// appointmentsRouter.get('/:id', async (request, response) => {
+//   const { id } = request.params;
+//   const appointment = await appointmentsRepository.findOne(id);
+//   if (!appointment) {
+//     return response
+//       .status(404)
+//       .json({ message: 'Não foi localizado o agendamento.' });
+//   }
+//   return response.json(appointment);
+// });
 
-  console.log(request.user);
-
-  const appointments = await appointmentsRepository.find();
-  return response.json(appointments);
-});
-
-Routes.get('/:id', async (request, response) => {
-  const appointmentsRepository = getCustomRepository(AppointmentRepository);
-  const { id } = request.params;
-  const appointment = await appointmentsRepository.findOne(id);
-  if (!appointment) {
-    return response
-      .status(404)
-      .json({ message: 'Não foi localizado o agendamento.' });
-  }
-  return response.json(appointment);
-});
-
-export default Routes;
+export default appointmentsRouter;

@@ -5,13 +5,15 @@ import checkJwt from '@shared/infra/http/middlewares/checkJwt';
 import uploadConfig from '@config/upload';
 import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
 
+import { container } from 'tsyringe';
+
 const Routes = Router();
 const upload = multer(uploadConfig);
 
 Routes.post('/', async (request: Request, response: Response) => {
   const { password, name, email } = request.body;
 
-  const createUser = new CreateUserService();
+  const createUser = container.resolve(CreateUserService);
 
   const user = await createUser.execute({
     name,
@@ -29,8 +31,7 @@ Routes.patch(
   checkJwt,
   upload.single('avatar'),
   async (request: Request, response: Response) => {
-    const updateUserAvatarService = new UpdateUserAvatarService();
-    console.log(request.file);
+    const updateUserAvatarService = container.resolve(UpdateUserAvatarService);
     const user = await updateUserAvatarService.execute({
       user_id: request.user.id,
       avatarFilename: request.file.filename,
