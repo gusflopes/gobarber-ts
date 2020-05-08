@@ -15,14 +15,11 @@
 // [] O usuário não pode agendar em um horários que já passou;
 // [] O usuário não pode agendar serviços consigo mesmo;
 
+import AppError from '@shared/errors/AppError';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import CreateAppointmentService from './CreateAppointmentService';
 
 describe('CreateAppointment', () => {
-  test('1+2 = 3', () => {
-    expect(1 + 2).toBe(3);
-  });
-
   it('should be able create a new appointment', async () => {
     const fakeRepository = new FakeAppointmentsRepository();
     const createAppointmentService = new CreateAppointmentService(
@@ -37,9 +34,26 @@ describe('CreateAppointment', () => {
     expect(appointment.provider_id).toBe('15154');
   });
 
-  // it('should not be able create two appointments at the same time', () => {
-  //   // const createAppointmentService = new CreateAppointmentService()
-  // });
+  it('should not be able create two appointments at the same time', async () => {
+    const fakeRepository = new FakeAppointmentsRepository();
+    const createAppointmentService = new CreateAppointmentService(
+      fakeRepository,
+    );
+
+    const appointmentDate = new Date(2020, 4, 10, 11);
+
+    await createAppointmentService.execute({
+      date: appointmentDate,
+      provider_id: '15154',
+    });
+
+    expect(
+      createAppointmentService.execute({
+        date: appointmentDate,
+        provider_id: '15154',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
 
   // it('should be able create a new appointment', () => {
   //   // const createAppointmentService = new CreateAppointmentService()
