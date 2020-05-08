@@ -48,24 +48,3 @@ describe('CreateUser', () => {
     );
   });
 });
-
-// it('should not be able create two appointments at the same time', async () => {
-//   const fakeRepository = new FakeUsersRepository();
-//   const createAppointmentService = new CreateUserService(
-//     fakeRepository,
-//   );
-
-//   const appointmentDate = new Date(2020, 4, 10, 11);
-
-//   await createAppointmentService.execute({
-//     date: appointmentDate,
-//     provider_id: '15154',
-//   });
-
-//   expect(
-//     createAppointmentService.execute({
-//       date: appointmentDate,
-//       provider_id: '15154',
-//     }),
-//   ).rejects.toBeInstanceOf(AppError);
-// });
