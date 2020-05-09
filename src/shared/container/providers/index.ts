@@ -2,12 +2,16 @@ import { container } from 'tsyringe';
 
 import IStorageProvider from './StorageProvider/models/IStorageProvider';
 import LocalStorageProvider from './StorageProvider/implementations/LocalStorageProvider';
-// import IMailProvider from './MailProvider/models/IMailProvider.interface';
-// import FakeMailProvider from './MailProvider/fakes/FakeMailProvider';
+
+import IMailProvider from './MailProvider/models/IMailProvider.interface';
+import EtherealMailProvider from './MailProvider/implementations/EtherealMailProvider';
 
 container.registerSingleton<IStorageProvider>(
   'StorageProvider',
   LocalStorageProvider,
 );
 
-// container.registerSingleton<IMailProvider>('MailProvider', FakeMailProvider);
+container.registerInstance<IMailProvider>(
+  'MailProvider',
+  new EtherealMailProvider(),
+);
