@@ -1,20 +1,42 @@
-import { getRepository, Repository, EntityRepository } from 'typeorm';
+import { getRepository, Repository, Raw } from 'typeorm';
+import {} from 'date-fns';
 
 import IAppointmentRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointmentDTO';
 
+import IFindMonthlyAppointmentsDTO from '@modules/appointments/dtos/IFindMonthlyAppointmentsDTO';
 import Appointment from '../entities/Appointment';
 
 // interface CreateAppointmentDTO {
 //   provider: string;
 //   date: Date;
 // }
-@EntityRepository(Appointment)
+// @EntityRepository(Appointment)
 class AppointmentsRepository implements IAppointmentRepository {
   private ormRepository: Repository<Appointment>;
 
   constructor() {
     this.ormRepository = getRepository(Appointment);
+  }
+
+  public async findMonthlyAppointments({
+    provider_id,
+    month,
+    year,
+  }: IFindMonthlyAppointmentsDTO): Promise<Appointment[]> {
+    const parsedMonth = String(month).padStart(2, '0');
+
+    const appointments = await this.ormRepository.find({
+      where: {
+        provider_id,
+        date: Raw(
+          dateFieldName =>
+            `to_char(${dateFieldName}, 'MM-YYYY) = '${parsedMonth}-${year}'`,
+        ),
+      },
+    });
+
+    return appointments;
   }
 
   public async findByDate(date: Date): Promise<Appointment | undefined> {
