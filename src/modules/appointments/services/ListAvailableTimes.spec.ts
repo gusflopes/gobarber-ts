@@ -19,10 +19,12 @@ describe('ListAvailableDays', () => {
   it('should be able to list the available times for specific provider and day', async () => {
     await fakeAppointmentsRepository.create({
       provider_id: 'provider',
+      client_id: 'client',
       date: new Date(2020, 5, 3, 8, 0, 0),
     });
     await fakeAppointmentsRepository.create({
       provider_id: 'provider',
+      client_id: 'client',
       date: new Date(2020, 5, 3, 10, 0, 0),
     });
 
@@ -46,10 +48,12 @@ describe('ListAvailableDays', () => {
   it('should not list available times in the closest 2 hours from current time', async () => {
     await fakeAppointmentsRepository.create({
       provider_id: 'provider',
+      client_id: 'client',
       date: new Date(2020, 5, 3, 14, 0, 0),
     });
     await fakeAppointmentsRepository.create({
       provider_id: 'provider',
+      client_id: 'client',
       date: new Date(2020, 5, 3, 15, 0, 0),
     });
 
