@@ -1,36 +1,46 @@
 // import AppError from '@shared/errors/AppError';
 
 import FakeMailProvider from '@shared/container/providers/MailProvider/fakes/FakeMailProvider';
+import AppError from '@shared/errors/AppError';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
-import ResetPasswordService from './ResetPasswordService';
+import SendResetPasswordMailService from './SendResetPasswordMailService';
 // import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
+import FakeUsersTokenRepository from '../repositories/fakes/FakeUserTokensRepository';
+import ResetPasswordService from './ResetPasswordService';
 
 describe('ResetPassword', () => {
   let resetPassword: ResetPasswordService;
   let fakeUserRepository: FakeUsersRepository;
   let fakeMailProvider: FakeMailProvider;
+  let fakeUserTokenRepository: FakeUsersTokenRepository;
 
   beforeEach(() => {
     fakeUserRepository = new FakeUsersRepository();
     fakeMailProvider = new FakeMailProvider();
+    fakeUserTokenRepository = new FakeUsersTokenRepository();
     resetPassword = new ResetPasswordService(
       fakeUserRepository,
-      fakeMailProvider,
+      fakeUserTokenRepository,
     );
   });
 
-  it('should be able to recover the password using email address', async () => {
-    const sendMail = jest.spyOn(fakeMailProvider, 'sendMail');
-    await fakeUserRepository.create({
+  it('should be able to reset password', async () => {
+    // const sendMail = jest.spyOn(fakeMailProvider, 'sendMail');
+    const user = await fakeUserRepository.create({
       name: 'John Doe',
       email: 'johndoe@example.com',
       password: '123456',
     });
 
+    const { token } = await fakeUserTokenRepository.generate(user.id);
+
     await resetPassword.execute({
-      email: 'johndoe@example.com',
+      password: '123123',
+      token,
     });
 
-    expect(sendMail).toHaveBeenCalled();
+    const updatedUser = await fakeUserRepository.findById(user.id);
+
+    expect(updatedUser?.password).toBe('123123');
   });
 });
