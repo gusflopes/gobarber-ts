@@ -1,10 +1,11 @@
 import { inject, injectable } from 'tsyringe';
+import { isAfter, addHours } from 'date-fns';
 
-// import User from '../infra/typeorm/entities/User';
-// import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider.interface';
 import AppError from '@shared/errors/AppError';
+import { compare } from 'bcryptjs';
 import IUsersRepository from '../repositories/IUsersRepository';
 import IUserTokenRepository from '../repositories/IUserTokensRepository';
+import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 
 interface IRequest {
   token: string;
@@ -15,9 +16,10 @@ interface IRequest {
 export default class ResetPasswordService {
   constructor(
     @inject('UsersRepository') private usersRepository: IUsersRepository,
-    // @inject('MailProvider') private mailProvider: IMailProvider,
     @inject('UserTokensRepository')
     private userTokensRepository: IUserTokenRepository,
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({ token, password }: IRequest): Promise<void> {
@@ -33,7 +35,14 @@ export default class ResetPasswordService {
       throw new AppError('User token does not exists.');
     }
 
-    user.password = password;
+    const tokenCreatedAt = userToken.created_at;
+    const compareDate = addHours(tokenCreatedAt, 2);
+
+    if (isAfter(Date.now(), compareDate)) {
+      throw new AppError('Token expired.');
+    }
+
+    user.password = await this.hashProvider.generateHash(password);
     await this.usersRepository.save(user);
   }
 }
